@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>~*~ UK Devolution & Growth Intelligence Hub ~*~</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* GEOCITIES VIBES */
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+        
+        * {
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000080;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="20" height="20" fill="%23000080"/><rect width="10" height="10" fill="%23000066"/><rect x="10" y="10" width="10" height="10" fill="%23000066"/></svg>');
+            color: #ffff00;
+            min-height: 100vh;
+        }
+        
+        .marquee-container {
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            padding: 5px;
+            overflow: hidden;
+        }
+        
+        .marquee {
+            animation: marquee 15s linear infinite;
+            white-space: nowrap;
+            color: #000;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(180deg, #800080 0%, #000080 100%);
+            border-bottom: 5px ridge #c0c0c0;
+        }
+        
+        .header h1 {
+            color: #00ff00;
+            text-shadow: 3px 3px #ff00ff, -1px -1px #000;
+            font-size: 2.5em;
+            margin: 10px 0;
+            animation: rainbow 3s infinite;
+        }
+        
+        @keyframes rainbow {
+            0% { color: #ff0000; }
+            17% { color: #ff8800; }
+            33% { color: #ffff00; }
+            50% { color: #00ff00; }
+            67% { color: #00ffff; }
+            83% { color: #ff00ff; }
+            100% { color: #ff0000; }
+        }
+        
+        .under-construction {
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            gap: 10px;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: #c0c0c0;
+            border: 3px outset #fff;
+            padding: 10px;
+            color: #000;
+        }
+        
+        .sidebar h2 {
+            background: linear-gradient(90deg, #000080, #0000ff);
+            color: #fff;
+            padding: 5px;
+            margin: -10px -10px 10px -10px;
+            font-size: 14px;
+        }
+        
+        .map-container {
+            flex: 1;
+            min-width: 500px;
+            height: 600px;
+            border: 5px ridge #808080;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .layer-toggle {
+            margin: 5px 0;
+            padding: 5px;
+            background: #fff;
+            border: 2px inset #808080;
+        }
+        
+        .layer-toggle label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .layer-toggle input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #000;
+        }
+        
+        .btn-90s {
+            background: linear-gradient(180deg, #dfdfdf 0%, #c0c0c0 50%, #a0a0a0 100%);
+            border: 3px outset #fff;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            margin: 5px 0;
+            width: 100%;
+        }
+        
+        .btn-90s:active {
+            border-style: inset;
+        }
+        
+        .btn-90s:hover {
+            background: linear-gradient(180deg, #efefef 0%, #d0d0d0 50%, #b0b0b0 100%);
+        }
+        
+        .form-section {
+            background: #fff;
+            border: 2px inset #808080;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .form-section h3 {
+            margin: 0 0 10px 0;
+            color: #800080;
+            font-size: 14px;
+            border-bottom: 1px dashed #800080;
+        }
+        
+        .form-group {
+            margin: 8px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000080;
+        }
+        
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 5px;
+            border: 2px inset #808080;
+            font-family: 'Comic Neue', cursive;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            height: 60px;
+            resize: vertical;
+        }
+        
+        .visitor-counter {
+            background: #000;
+            color: #00ff00;
+            padding: 10px;
+            text-align: center;
+            margin-top: 10px;
+            border: 2px inset #808080;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .guestbook-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .guestbook-link a {
+            color: #ff00ff;
+            text-decoration: underline;
+        }
+        
+        .webring {
+            background: #ffff00;
+            color: #000;
+            padding: 10px;
+            margin-top: 10px;
+            border: 2px ridge #808080;
+            text-align: center;
+            font-size: 11px;
+        }
+        
+        .footer {
+            background: #000;
+            color: #00ff00;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            border-top: 3px ridge #c0c0c0;
+        }
+        
+        .footer a {
+            color: #00ffff;
+        }
+        
+        .sparkle {
+            animation: sparkle 0.5s infinite alternate;
+        }
+        
+        @keyframes sparkle {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+        
+        /* Leaflet popup styling */
+        .leaflet-popup-content-wrapper {
+            background: #c0c0c0;
+            border: 3px outset #fff;
+            border-radius: 0;
+        }
+        
+        .leaflet-popup-content {
+            font-family: 'Comic Neue', cursive;
+            color: #000;
+        }
+        
+        .leaflet-popup-tip {
+            background: #c0c0c0;
+        }
+        
+        .popup-title {
+            font-weight: bold;
+            color: #000080;
+            border-bottom: 1px solid #808080;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .popup-category {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 2px 0;
+        }
+        
+        .popup-category.devolution { background: #ff6b6b; color: #fff; }
+        .popup-category.local-growth { background: #4ecdc4; color: #000; }
+        .popup-category.transport { background: #45b7d1; color: #000; }
+        .popup-category.construction { background: #96c93d; color: #000; }
+        
+        .intel-list {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        
+        .intel-item {
+            padding: 5px;
+            margin: 3px 0;
+            background: #fff;
+            border: 1px solid #808080;
+        }
+        
+        .catapult-icon {
+            background: #ff6600;
+            border: 2px solid #000;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            font-size: 12px;
+        }
+        
+        .status-message {
+            padding: 5px;
+            margin: 5px 0;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .status-success {
+            background: #90EE90;
+            color: #006400;
+        }
+        
+        .status-error {
+            background: #FFB6C1;
+            color: #8B0000;
+        }
+        
+        .click-instruction {
+            background: #ffffcc;
+            padding: 5px;
+            font-size: 11px;
+            text-align: center;
+            border: 1px dashed #808080;
+            margin: 5px 0;
+            display: none;
+        }
+        
+        .click-instruction.active {
+            display: block;
+        }
+        
+        @media (max-width: 800px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: auto;
+            }
+            .map-container {
+                min-width: auto;
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="marquee-container">
+        <div class="marquee">
+            ★彡 WELCOME TO THE UK DEVOLUTION & LOCAL GROWTH INTELLIGENCE HUB 彡★ --- ADD YOUR INTEL! --- TRACK TRANSPORT, CONSTRUCTION, DEVOLUTION & LOCAL GROWTH --- POWERED BY PEOPLE LIKE YOU! ---
+        </div>
+    </div>
+    
+    <div class="header">
+        <span class="under-construction">🚧</span>
+        <h1>~*~ UK Devolution Map ~*~</h1>
+        <p style="color: #00ffff; margin: 5px;">✨ Combined Authorities • Catapult Centres • Crowd-sourced Intelligence ✨</p>
+        <span class="under-construction">🚧</span>
+    </div>
+    
+    <div class="main-container">
+        <div class="sidebar">
+            <h2>📁 LAYER CONTROLS</h2>
+            
+            <div class="layer-toggle">
+                <label>
+                    <input type="checkbox" id="toggleAuthorities" checked>
+                    🗺️ Combined/Mayoral Authorities
+                </label>
+            </div>
+            
+            <div class="layer-toggle">
+                <label>
+                    <input type="checkbox" id="toggleCatapults" checked>
+                    🚀 Catapult Centres
+                </label>
+            </div>
+            
+            <div class="layer-toggle">
+                <label>
+                    <input type="checkbox" id="toggleIntelligence" checked>
+                    💡 User Intelligence
+                </label>
+            </div>
+            
+            <hr style="border: 1px inset #808080;">
+            
+            <h2>📊 LEGEND</h2>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(100, 149, 237, 0.4); border: 2px solid #4169e1;"></div>
+                <span>Combined Authority</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff6600; border-radius: 50%;"></div>
+                <span>Catapult Centre</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff6b6b;"></div>
+                <span>Devolution Intel</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4ecdc4;"></div>
+                <span>Local Growth Intel</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #45b7d1;"></div>
+                <span>Transport Intel</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #96c93d;"></div>
+                <span>Construction Intel</span>
+            </div>
+            
+            <div class="form-section">
+                <h3>📝 ADD INTELLIGENCE</h3>
+                
+                <div id="clickInstruction" class="click-instruction">
+                    👆 Click on the map to set location!
+                </div>
+                
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="intelCategory">
+                        <option value="devolution">Devolution</option>
+                        <option value="local-growth">Local Growth</option>
+                        <option value="transport">Transport</option>
+                        <option value="construction">Construction</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Location:</label>
+                    <button class="btn-90s" id="pickLocationBtn">📍 Pick on Map</button>
+                    <input type="text" id="locationDisplay" placeholder="Click map or enter coords" readonly style="margin-top: 5px;">
+                    <input type="hidden" id="intelLat">
+                    <input type="hidden" id="intelLng">
+                </div>
+                
+                <div class="form-group">
+                    <label>Your Intelligence:</label>
+                    <textarea id="intelText" placeholder="What's happening here?"></textarea>
+                </div>
+                
+                <button class="btn-90s" id="submitIntel">✨ Submit Intel ✨</button>
+                
+                <div id="statusMessage"></div>
+            </div>
+            
+            <button class="btn-90s" id="clearAllIntel" style="background: #ffcccc;">🗑️ Clear All My Intel</button>
+            
+            <div class="visitor-counter">
+                <div>YOU ARE VISITOR</div>
+                <div style="font-size: 24px; letter-spacing: 2px;" id="visitorCount">000042</div>
+            </div>
+            
+            <div class="guestbook-link">
+                <a href="#" onclick="alert('Guestbook coming soon! 📖'); return false;">📖 Sign my Guestbook!</a>
+            </div>
+            
+            <div class="webring">
+                <strong>🔗 UK Gov WebRing 🔗</strong><br>
+                <a href="#">&lt;&lt; Prev</a> |
+                <a href="#">Random</a> |
+                <a href="#">Next &gt;&gt;</a>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>
+            <span class="sparkle">★</span>
+            Best viewed in Netscape Navigator 4.0 at 800x600 
+            <span class="sparkle">★</span>
+        </p>
+        <p>
+            Made with 💜 in 2025 | 
+            <a href="mailto:webmaster@example.com">Email the Webmaster</a> |
+            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="counter" style="width: 1px;">
+        </p>
+        <p style="font-size: 10px;">
+            Data sources: ONS, Catapult Network, Institute for Government | No copyright intended
+        </p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map centred on England
+        const map = L.map('map').setView([53.0, -1.5], 6);
+        
+        // Add tile layer - using a vintage-ish style
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 18
+        }).addTo(map);
+        
+        // Layer groups
+        const authoritiesLayer = L.layerGroup().addTo(map);
+        const catapultsLayer = L.layerGroup().addTo(map);
+        const intelligenceLayer = L.layerGroup().addTo(map);
+        
+        // Combined/Mayoral Authorities data with approximate boundaries
+        const combinedAuthorities = [
+            {
+                name: "Greater Manchester",
+                mayor: "Andy Burnham",
+                center: [53.4808, -2.2426],
+                bounds: [[53.35, -2.55], [53.35, -1.95], [53.62, -1.95], [53.62, -2.55]]
+            },
+            {
+                name: "Liverpool City Region",
+                mayor: "Steve Rotheram",
+                center: [53.4084, -2.9916],
+                bounds: [[53.25, -3.15], [53.25, -2.70], [53.55, -2.70], [53.55, -3.15]]
+            },
+            {
+                name: "West Midlands",
+                mayor: "Richard Parker",
+                center: [52.4862, -1.8904],
+                bounds: [[52.30, -2.15], [52.30, -1.55], [52.65, -1.55], [52.65, -2.15]]
+            },
+            {
+                name: "West Yorkshire",
+                mayor: "Tracy Brabin",
+                center: [53.8008, -1.5491],
+                bounds: [[53.60, -2.00], [53.60, -1.20], [53.95, -1.20], [53.95, -2.00]]
+            },
+            {
+                name: "South Yorkshire",
+                mayor: "Oliver Coppard",
+                center: [53.3811, -1.4701],
+                bounds: [[53.20, -1.80], [53.20, -1.05], [53.55, -1.05], [53.55, -1.80]]
+            },
+            {
+                name: "Tees Valley",
+                mayor: "Ben Houchen",
+                center: [54.5704, -1.2350],
+                bounds: [[54.40, -1.55], [54.40, -0.95], [54.72, -0.95], [54.72, -1.55]]
+            },
+            {
+                name: "North East",
+                mayor: "Kim McGuinness",
+                center: [54.9783, -1.6178],
+                bounds: [[54.75, -2.00], [54.75, -1.25], [55.20, -1.25], [55.20, -2.00]]
+            },
+            {
+                name: "Cambridgeshire & Peterborough",
+                mayor: "Nik Johnson",
+                center: [52.4053, 0.0648],
+                bounds: [[52.10, -0.40], [52.10, 0.50], [52.70, 0.50], [52.70, -0.40]]
+            },
+            {
+                name: "West of England",
+                mayor: "Dan Norris",
+                center: [51.4545, -2.5879],
+                bounds: [[51.30, -2.80], [51.30, -2.35], [51.60, -2.35], [51.60, -2.80]]
+            },
+            {
+                name: "Greater London",
+                mayor: "Sadiq Khan",
+                center: [51.5074, -0.1278],
+                bounds: [[51.30, -0.50], [51.30, 0.30], [51.70, 0.30], [51.70, -0.50]]
+            },
+            {
+                name: "York & North Yorkshire",
+                mayor: "David Skaith",
+                center: [54.0000, -1.2000],
+                bounds: [[53.75, -1.80], [53.75, -0.60], [54.40, -0.60], [54.40, -1.80]]
+            },
+            {
+                name: "East Midlands",
+                mayor: "Claire Ward",
+                center: [52.9548, -1.1581],
+                bounds: [[52.70, -1.50], [52.70, -0.80], [53.20, -0.80], [53.20, -1.50]]
+            },
+            {
+                name: "Hull & East Yorkshire",
+                mayor: "TBC (elections 2025)",
+                center: [53.7676, -0.3274],
+                bounds: [[53.55, -0.70], [53.55, 0.10], [53.95, 0.10], [53.95, -0.70]]
+            },
+            {
+                name: "Greater Lincolnshire",
+                mayor: "TBC (deal agreed)",
+                center: [53.2000, -0.2000],
+                bounds: [[52.70, -0.60], [52.70, 0.30], [53.50, 0.30], [53.50, -0.60]]
+            }
+        ];
+        
+        // Draw combined authorities
+        combinedAuthorities.forEach(auth => {
+            const polygon = L.polygon(auth.bounds, {
+                color: '#4169e1',
+                fillColor: '#6495ed',
+                fillOpacity: 0.3,
+                weight: 3
+            }).addTo(authoritiesLayer);
+            
+            polygon.bindPopup(`
+                <div class="popup-title">🏛️ ${auth.name}</div>
+                <p><strong>Mayor:</strong> ${auth.mayor}</p>
+                <p><em>Click to see intelligence in this area</em></p>
+            `);
+        });
+        
+        // Catapult Centres data
+        const catapultCentres = [
+            // Cell and Gene Therapy
+            { name: "Cell & Gene Therapy Catapult", location: "London (Guy's Hospital)", lat: 51.5025, lng: -0.0887, type: "Cell & Gene Therapy" },
+            { name: "Cell & Gene Therapy Catapult", location: "Stevenage", lat: 51.9032, lng: -0.2019, type: "Cell & Gene Therapy" },
+            { name: "Cell & Gene Therapy Catapult", location: "Braintree", lat: 51.8787, lng: 0.5500, type: "Cell & Gene Therapy" },
+            { name: "Cell & Gene Therapy Catapult", location: "Edinburgh", lat: 55.9221, lng: -3.1747, type: "Cell & Gene Therapy" },
+            
+            // Compound Semiconductor
+            { name: "Compound Semiconductor Applications Catapult", location: "Newport", lat: 51.5842, lng: -2.9977, type: "Compound Semiconductor" },
+            { name: "Compound Semiconductor Applications Catapult", location: "Bristol", lat: 51.4545, lng: -2.5879, type: "Compound Semiconductor" },
+            
+            // Connected Places
+            { name: "Connected Places Catapult", location: "London", lat: 51.5322, lng: -0.1234, type: "Connected Places" },
+            { name: "Connected Places Catapult", location: "Belfast", lat: 54.5973, lng: -5.9301, type: "Connected Places" },
+            { name: "Connected Places Catapult", location: "Bristol", lat: 51.4600, lng: -2.5800, type: "Connected Places" },
+            
+            // Digital Catapult
+            { name: "Digital Catapult", location: "London (King's Cross)", lat: 51.5340, lng: -0.1250, type: "Digital" },
+            { name: "Digital Catapult", location: "Belfast", lat: 54.6000, lng: -5.9200, type: "Digital" },
+            { name: "Digital Catapult", location: "North East", lat: 54.9700, lng: -1.6100, type: "Digital" },
+            
+            // High Value Manufacturing - AMRC
+            { name: "AMRC (HVM Catapult)", location: "Sheffield/Rotherham", lat: 53.4000, lng: -1.3500, type: "HVM" },
+            
+            // High Value Manufacturing - MTC
+            { name: "MTC (HVM Catapult)", location: "Coventry", lat: 52.4100, lng: -1.5100, type: "HVM" },
+            { name: "MTC (HVM Catapult)", location: "Liverpool", lat: 53.4050, lng: -2.9700, type: "HVM" },
+            { name: "MTC (HVM Catapult)", location: "Oxford/Culham", lat: 51.6600, lng: -1.2300, type: "HVM" },
+            
+            // High Value Manufacturing - NCC
+            { name: "NCC (HVM Catapult)", location: "Bristol", lat: 51.5200, lng: -2.5500, type: "HVM" },
+            
+            // High Value Manufacturing - CPI
+            { name: "CPI (HVM Catapult)", location: "Sedgefield", lat: 54.6500, lng: -1.4500, type: "HVM" },
+            { name: "CPI (HVM Catapult)", location: "Liverpool", lat: 53.4000, lng: -2.9800, type: "HVM" },
+            
+            // High Value Manufacturing - WMG
+            { name: "WMG (HVM Catapult)", location: "Warwick/Coventry", lat: 52.3800, lng: -1.5600, type: "HVM" },
+            
+            // High Value Manufacturing - NMIS/AFRC
+            { name: "NMIS/AFRC (HVM Catapult)", location: "Glasgow/Paisley", lat: 55.8450, lng: -4.4200, type: "HVM" },
+            
+            // Medicines Discovery
+            { name: "Medicines Discovery Catapult", location: "Alderley Park, Cheshire", lat: 53.2700, lng: -2.2300, type: "Medicines Discovery" },
+            
+            // Offshore Renewable Energy
+            { name: "ORE Catapult", location: "Glasgow", lat: 55.8600, lng: -4.2500, type: "Offshore Renewable Energy" },
+            { name: "ORE Catapult", location: "Blyth", lat: 55.1260, lng: -1.5080, type: "Offshore Renewable Energy" },
+            { name: "ORE Catapult", location: "Levenmouth", lat: 56.1950, lng: -3.0000, type: "Offshore Renewable Energy" },
+            { name: "ORE Catapult", location: "Grimsby", lat: 53.5675, lng: -0.0800, type: "Offshore Renewable Energy" },
+            { name: "ORE Catapult", location: "Pembroke Dock", lat: 51.6900, lng: -4.9400, type: "Offshore Renewable Energy" },
+            
+            // Satellite Applications
+            { name: "Satellite Applications Catapult", location: "Harwell, Oxfordshire", lat: 51.5700, lng: -1.3100, type: "Satellite Applications" },
+            { name: "Satellite Applications Catapult", location: "Leicester", lat: 52.6369, lng: -1.1398, type: "Satellite Applications" },
+            { name: "Satellite Applications Catapult", location: "Cornwall", lat: 50.4400, lng: -5.0500, type: "Satellite Applications" }
+        ];
+        
+        // Custom catapult icon
+        const catapultIcon = L.divIcon({
+            className: 'catapult-marker',
+            html: '<div class="catapult-icon">🚀</div>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+        
+        // Add catapult markers
+        catapultCentres.forEach(centre => {
+            const marker = L.marker([centre.lat, centre.lng], {
+                icon: catapultIcon
+            }).addTo(catapultsLayer);
+            
+            marker.bindPopup(`
+                <div class="popup-title">🚀 ${centre.name}</div>
+                <p><strong>Location:</strong> ${centre.location}</p>
+                <p><strong>Type:</strong> ${centre.type}</p>
+            `);
+        });
+        
+        // Load intelligence from localStorage
+        function loadIntelligence() {
+            intelligenceLayer.clearLayers();
+            const intel = JSON.parse(localStorage.getItem('ukDevolutionIntel') || '[]');
+            
+            const categoryColors = {
+                'devolution': '#ff6b6b',
+                'local-growth': '#4ecdc4',
+                'transport': '#45b7d1',
+                'construction': '#96c93d'
+            };
+            
+            intel.forEach((item, index) => {
+                const marker = L.circleMarker([item.lat, item.lng], {
+                    radius: 10,
+                    fillColor: categoryColors[item.category],
+                    color: '#000',
+                    weight: 2,
+                    fillOpacity: 0.8
+                }).addTo(intelligenceLayer);
+                
+                const categoryLabel = item.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                marker.bindPopup(`
+                    <div class="popup-title">💡 User Intelligence</div>
+                    <span class="popup-category ${item.category}">${categoryLabel}</span>
+                    <div class="intel-item">${item.text}</div>
+                    <p style="font-size: 10px; color: #666;">Added: ${new Date(item.timestamp).toLocaleDateString()}</p>
+                `);
+            });
+        }
+        
+        loadIntelligence();
+        
+        // Layer toggle controls
+        document.getElementById('toggleAuthorities').addEventListener('change', function() {
+            if (this.checked) {
+                map.addLayer(authoritiesLayer);
+            } else {
+                map.removeLayer(authoritiesLayer);
+            }
+        });
+        
+        document.getElementById('toggleCatapults').addEventListener('change', function() {
+            if (this.checked) {
+                map.addLayer(catapultsLayer);
+            } else {
+                map.removeLayer(catapultsLayer);
+            }
+        });
+        
+        document.getElementById('toggleIntelligence').addEventListener('change', function() {
+            if (this.checked) {
+                map.addLayer(intelligenceLayer);
+            } else {
+                map.removeLayer(intelligenceLayer);
+            }
+        });
+        
+        // Location picking
+        let pickingLocation = false;
+        
+        document.getElementById('pickLocationBtn').addEventListener('click', function() {
+            pickingLocation = true;
+            document.getElementById('clickInstruction').classList.add('active');
+            map.getContainer().style.cursor = 'crosshair';
+        });
+        
+        map.on('click', function(e) {
+            if (pickingLocation) {
+                document.getElementById('intelLat').value = e.latlng.lat.toFixed(6);
+                document.getElementById('intelLng').value = e.latlng.lng.toFixed(6);
+                document.getElementById('locationDisplay').value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                
+                pickingLocation = false;
+                document.getElementById('clickInstruction').classList.remove('active');
+                map.getContainer().style.cursor = '';
+            }
+        });
+        
+        // Submit intelligence
+        document.getElementById('submitIntel').addEventListener('click', function() {
+            const lat = parseFloat(document.getElementById('intelLat').value);
+            const lng = parseFloat(document.getElementById('intelLng').value);
+            const category = document.getElementById('intelCategory').value;
+            const text = document.getElementById('intelText').value.trim();
+            
+            const statusDiv = document.getElementById('statusMessage');
+            
+            if (!lat || !lng) {
+                statusDiv.innerHTML = '<div class="status-message status-error">⚠️ Please pick a location on the map!</div>';
+                return;
+            }
+            
+            if (!text) {
+                statusDiv.innerHTML = '<div class="status-message status-error">⚠️ Please enter some intelligence!</div>';
+                return;
+            }
+            
+            const intel = JSON.parse(localStorage.getItem('ukDevolutionIntel') || '[]');
+            intel.push({
+                lat,
+                lng,
+                category,
+                text,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('ukDevolutionIntel', JSON.stringify(intel));
+            
+            // Clear form
+            document.getElementById('intelLat').value = '';
+            document.getElementById('intelLng').value = '';
+            document.getElementById('locationDisplay').value = '';
+            document.getElementById('intelText').value = '';
+            
+            // Reload markers
+            loadIntelligence();
+            
+            statusDiv.innerHTML = '<div class="status-message status-success">✨ Intel added successfully! ✨</div>';
+            setTimeout(() => statusDiv.innerHTML = '', 3000);
+        });
+        
+        // Clear all intelligence
+        document.getElementById('clearAllIntel').addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete all your saved intelligence? This cannot be undone!')) {
+                localStorage.removeItem('ukDevolutionIntel');
+                loadIntelligence();
+                document.getElementById('statusMessage').innerHTML = '<div class="status-message status-success">All intelligence cleared!</div>';
+                setTimeout(() => document.getElementById('statusMessage').innerHTML = '', 3000);
+            }
+        });
+        
+        // Visitor counter (fake but fun)
+        const baseCount = 42;
+        const daysSinceEpoch = Math.floor(Date.now() / 86400000);
+        const visitorCount = baseCount + (daysSinceEpoch % 1000);
+        document.getElementById('visitorCount').textContent = visitorCount.toString().padStart(6, '0');
+    </script>
+</body>
+</html>
