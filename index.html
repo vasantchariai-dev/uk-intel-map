@@ -402,7 +402,28 @@
                     💡 User Intelligence
                 </label>
             </div>
-            
+
+            <div class="layer-toggle">
+                <label>
+                    <input type="checkbox" id="toggleFreeports" checked>
+                    🚢 Freeports
+                </label>
+            </div>
+
+            <div class="layer-toggle">
+                <label>
+                    <input type="checkbox" id="toggleInvestmentZones" checked>
+                    💰 Investment Zones
+                </label>
+            </div>
+
+            <div class="layer-toggle">
+                <label>
+                    <input type="checkbox" id="togglePreloadedIntel" checked>
+                    📡 Official Intelligence
+                </label>
+            </div>
+
             <hr style="border: 1px inset #808080;">
             
             <h2>📊 LEGEND</h2>
@@ -413,6 +434,18 @@
             <div class="legend-item">
                 <div class="legend-color" style="background: #ff6600; border-radius: 50%;"></div>
                 <span>Catapult Centre</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #00CED1; border: 2px solid #008B8B;"></div>
+                <span>Freeport</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FFD700; border: 2px solid #DAA520;"></div>
+                <span>Investment Zone</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #9932CC; border-radius: 50%;"></div>
+                <span>Official Intel</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #ff6b6b;"></div>
@@ -521,6 +554,9 @@
         const authoritiesLayer = L.layerGroup().addTo(map);
         const catapultsLayer = L.layerGroup().addTo(map);
         const intelligenceLayer = L.layerGroup().addTo(map);
+        const freeportsLayer = L.layerGroup().addTo(map);
+        const investmentZonesLayer = L.layerGroup().addTo(map);
+        const preloadedIntelLayer = L.layerGroup().addTo(map);
         
         // Combined/Mayoral Authorities data with approximate boundaries
         const combinedAuthorities = [
@@ -684,6 +720,150 @@
             { name: "Satellite Applications Catapult", location: "Leicester", lat: 52.6369, lng: -1.1398, type: "Satellite Applications" },
             { name: "Satellite Applications Catapult", location: "Cornwall", lat: 50.4400, lng: -5.0500, type: "Satellite Applications" }
         ];
+
+        // UK Freeports data
+        const freeports = [
+            { name: "East Midlands Freeport", location: "East Midlands Airport & Gateway", lat: 52.8311, lng: -1.3278, status: "Operational", taxSites: 3, customsSites: 2, focus: "Advanced manufacturing, logistics" },
+            { name: "Felixstowe & Harwich Freeport", location: "Suffolk/Essex", lat: 51.9536, lng: 1.3117, status: "Operational", taxSites: 3, customsSites: 3, focus: "Ports, logistics, green energy" },
+            { name: "Humber Freeport", location: "Hull & Grimsby", lat: 53.7350, lng: -0.3000, status: "Operational", taxSites: 4, customsSites: 2, focus: "Offshore wind, decarbonisation" },
+            { name: "Liverpool City Region Freeport", location: "Merseyside", lat: 53.4500, lng: -2.9500, status: "Operational", taxSites: 3, customsSites: 2, focus: "Life sciences, advanced manufacturing" },
+            { name: "Plymouth and South Devon Freeport", location: "Devon", lat: 50.3755, lng: -4.1427, status: "Operational", taxSites: 3, customsSites: 2, focus: "Marine, defence, space" },
+            { name: "Solent Freeport", location: "Southampton & Portsmouth", lat: 50.8975, lng: -1.3960, status: "Operational", taxSites: 3, customsSites: 2, focus: "Maritime, advanced manufacturing" },
+            { name: "Teesside Freeport", location: "Teesside", lat: 54.6080, lng: -1.0700, status: "Operational", taxSites: 4, customsSites: 2, focus: "Clean energy, advanced manufacturing" },
+            { name: "Thames Freeport", location: "Essex (Tilbury, London Gateway)", lat: 51.4600, lng: 0.3600, status: "Operational", taxSites: 3, customsSites: 3, focus: "Logistics, advanced manufacturing" },
+            // Scotland Green Freeports
+            { name: "Inverness & Cromarty Firth Green Freeport", location: "Scottish Highlands", lat: 57.5000, lng: -4.2000, status: "Operational", taxSites: 3, customsSites: 2, focus: "Floating offshore wind, hydrogen" },
+            { name: "Forth Green Freeport", location: "Edinburgh/Fife", lat: 56.0200, lng: -3.4000, status: "Operational", taxSites: 4, customsSites: 2, focus: "Renewables, chemicals, shipbuilding" },
+            // Wales Freeports
+            { name: "Celtic Freeport", location: "Port Talbot & Milford Haven", lat: 51.6000, lng: -3.8000, status: "Designated", taxSites: 3, customsSites: 2, focus: "Floating offshore wind, green steel" }
+        ];
+
+        // Investment Zones data
+        const investmentZones = [
+            // England Investment Zones
+            { name: "Liverpool City Region Investment Zone", region: "Liverpool", lat: 53.4084, lng: -2.9916, focus: "Health & life sciences, advanced manufacturing", funding: "80m" },
+            { name: "Greater Manchester Investment Zone", region: "Greater Manchester", lat: 53.4808, lng: -2.2426, focus: "Advanced materials, manufacturing, digital", funding: "80m" },
+            { name: "North East Investment Zone", region: "North East", lat: 54.9783, lng: -1.6178, focus: "Electric vehicles, battery technology", funding: "80m" },
+            { name: "South Yorkshire Investment Zone", region: "South Yorkshire", lat: 53.3811, lng: -1.4701, focus: "Advanced manufacturing, green industries", funding: "80m" },
+            { name: "Tees Valley Investment Zone", region: "Tees Valley", lat: 54.5704, lng: -1.2350, focus: "Clean energy, process industries", funding: "80m" },
+            { name: "West Midlands Investment Zone", region: "West Midlands", lat: 52.4862, lng: -1.8904, focus: "Automotive, battery technology, healthcare", funding: "80m" },
+            { name: "West Yorkshire Investment Zone", region: "West Yorkshire", lat: 53.8008, lng: -1.5491, focus: "Life sciences, digital, green industries", funding: "80m" },
+            { name: "East Midlands Investment Zone", region: "East Midlands", lat: 52.9548, lng: -1.1581, focus: "Advanced manufacturing, space, energy", funding: "80m" },
+            // Extended Investment Zones (2024)
+            { name: "West of England Investment Zone", region: "Bristol/Bath", lat: 51.4545, lng: -2.5879, focus: "Advanced engineering, creative digital", funding: "80m" },
+            { name: "Cambridge Investment Zone", region: "Cambridgeshire", lat: 52.2053, lng: 0.1218, focus: "Life sciences, digital", funding: "80m" },
+            { name: "Greater London Investment Zone", region: "London", lat: 51.5074, lng: -0.1278, focus: "Life sciences, green industries", funding: "80m" },
+            { name: "Hull & East Riding Investment Zone", region: "Hull", lat: 53.7676, lng: -0.3274, focus: "Renewable energy, digital", funding: "80m" },
+            // Scotland Investment Zones
+            { name: "Glasgow City Region Investment Zone", region: "Glasgow", lat: 55.8642, lng: -4.2518, focus: "Advanced manufacturing, net zero", funding: "80m" },
+            { name: "North East Scotland Investment Zone", region: "Aberdeen", lat: 57.1497, lng: -2.0943, focus: "Energy transition", funding: "80m" },
+            // Wales Investment Zones
+            { name: "Wrexham & Flintshire Investment Zone", region: "North Wales", lat: 53.0460, lng: -2.9930, focus: "Advanced manufacturing", funding: "80m" },
+            { name: "South East Wales Investment Zone", region: "Cardiff/Newport", lat: 51.4816, lng: -3.1791, focus: "Compound semiconductors, fintech", funding: "80m" }
+        ];
+
+        // Pre-loaded official intelligence (major projects and initiatives)
+        const preloadedIntelligence = [
+            // DEVOLUTION INTELLIGENCE
+            { lat: 53.4808, lng: -2.2426, category: "devolution", title: "Trailblazer Devolution Deal", text: "Greater Manchester secured historic single funding settlement and new powers over housing, transport and skills in 2023.", source: "DLUHC" },
+            { lat: 52.4862, lng: -1.8904, category: "devolution", title: "Trailblazer Devolution Deal", text: "West Midlands agreed 'trailblazer' deal with powers over transport, skills, housing and business support.", source: "DLUHC" },
+            { lat: 54.9783, lng: -1.6178, category: "devolution", title: "North East Mayoral Combined Authority", text: "New combined authority launched in 2024 covering 7 councils. First mayor Kim McGuinness elected.", source: "MHCLG" },
+            { lat: 53.8008, lng: -1.5491, category: "devolution", title: "West Yorkshire Devolution", text: "West Yorkshire CA gaining enhanced powers including adult education budget and brownfield housing fund.", source: "WYCA" },
+            { lat: 51.4545, lng: -2.5879, category: "devolution", title: "West of England Level 4 Deal", text: "Mayor Dan Norris pursuing enhanced devolution settlement with new powers over transport and skills.", source: "WECA" },
+            { lat: 53.2000, lng: -0.2000, category: "devolution", title: "Greater Lincolnshire Deal", text: "New devolution deal agreed covering North Lincolnshire, North East Lincolnshire and Lincolnshire County.", source: "DLUHC" },
+            { lat: 53.7676, lng: -0.3274, category: "devolution", title: "Hull & East Yorkshire Deal", text: "New mayoral combined authority established covering Hull and East Riding. Elections held May 2025.", source: "DLUHC" },
+            { lat: 50.7184, lng: -1.8800, category: "devolution", title: "Bournemouth Christchurch Poole Deal", text: "Level 2 devolution deal agreed for BCP and Dorset Council with new combined authority.", source: "DLUHC" },
+            { lat: 51.2658, lng: 1.0880, category: "devolution", title: "Kent & Medway Deal", text: "Level 2 devolution deal in discussion for greater local powers.", source: "DLUHC" },
+            { lat: 52.6309, lng: 1.2974, category: "devolution", title: "Norfolk & Suffolk Deal", text: "Level 2 devolution deal agreed for Norfolk and Suffolk councils.", source: "DLUHC" },
+            { lat: 50.3755, lng: -4.1427, category: "devolution", title: "Devon & Torbay Deal", text: "Level 2 devolution discussions ongoing for combined county deal.", source: "DLUHC" },
+            { lat: 53.0027, lng: -2.1794, category: "devolution", title: "Staffordshire & Stoke Deal", text: "Level 2 devolution deal in negotiation.", source: "DLUHC" },
+
+            // TRANSPORT INTELLIGENCE
+            { lat: 52.4774, lng: -1.8991, category: "transport", title: "HS2 Phase 1 Construction", text: "HS2 construction ongoing between London and Birmingham. Main works progressing at Old Oak Common.", source: "HS2 Ltd" },
+            { lat: 51.5200, lng: -0.4400, category: "transport", title: "HS2 Old Oak Common Station", text: "Major interchange being built connecting HS2 with Elizabeth line and Great Western services.", source: "HS2 Ltd" },
+            { lat: 52.4816, lng: -1.8975, category: "transport", title: "HS2 Birmingham Curzon Street", text: "New terminus station under construction in Birmingham city centre.", source: "HS2 Ltd" },
+            { lat: 53.4808, lng: -2.2426, category: "transport", title: "Northern Powerhouse Rail Study", text: "Studies continue for improved rail links between Manchester and Leeds following HS2 northern leg cancellation.", source: "DfT" },
+            { lat: 53.4084, lng: -2.9916, category: "transport", title: "Liverpool-Manchester Rail Upgrade", text: "Significant capacity improvements planned for TransPennine route.", source: "Network Rail" },
+            { lat: 51.5074, lng: -0.1278, category: "transport", title: "Elizabeth Line Success", text: "Crossrail fully operational, boosting connectivity across London and commuter belt.", source: "TfL" },
+            { lat: 53.9600, lng: -1.0873, category: "transport", title: "Transpennine Route Upgrade", text: "Major upgrade to rail capacity and electrification between York and Manchester.", source: "Network Rail" },
+            { lat: 51.8821, lng: -0.4050, category: "transport", title: "Luton DART", text: "New direct air-rail transit system operational from Luton Airport Parkway.", source: "Luton Rising" },
+            { lat: 51.4700, lng: -0.4543, category: "transport", title: "Heathrow Western Rail Link", text: "Proposed new rail connection from Reading to Heathrow Terminal 5.", source: "DfT" },
+            { lat: 54.5704, lng: -1.2350, category: "transport", title: "Tees Valley Bus Reform", text: "Tees Valley pursuing bus franchising powers to improve public transport.", source: "TVCA" },
+            { lat: 53.4808, lng: -2.2426, category: "transport", title: "Bee Network Expansion", text: "Greater Manchester bus franchising now fully operational - first outside London since deregulation.", source: "TfGM" },
+            { lat: 51.5074, lng: -0.1278, category: "transport", title: "Silvertown Tunnel", text: "New road tunnel under Thames nearing completion, will connect Greenwich Peninsula and Silvertown.", source: "TfL" },
+            { lat: 55.8642, lng: -4.2518, category: "transport", title: "Glasgow Metro Proposal", text: "Plans for new metro system for Glasgow city region under development.", source: "Transport Scotland" },
+            { lat: 53.3811, lng: -1.4701, category: "transport", title: "South Yorkshire Mass Transit", text: "Plans for new mass transit system connecting Sheffield, Rotherham, Barnsley and Doncaster.", source: "SYMCA" },
+            { lat: 52.4862, lng: -1.8904, category: "transport", title: "West Midlands Metro Extension", text: "Metro extensions to Wolverhampton station and Brierley Hill under construction.", source: "WMCA" },
+            { lat: 53.7500, lng: -0.3500, category: "transport", title: "Humber Bridge Tolls Removed", text: "Humber Bridge tolls significantly reduced to boost connectivity.", source: "Humber Bridge Board" },
+
+            // LOCAL GROWTH INTELLIGENCE
+            { lat: 54.6080, lng: -1.0700, category: "local-growth", title: "Teesworks Development", text: "Largest industrial development site in UK. Major investment in clean energy and manufacturing.", source: "TVCA" },
+            { lat: 53.7456, lng: -0.3367, category: "local-growth", title: "Siemens Gamesa Blade Factory", text: "Major offshore wind blade manufacturing facility operational in Hull.", source: "Siemens Gamesa" },
+            { lat: 54.6000, lng: -1.0500, category: "local-growth", title: "SeAH Wind Investment", text: "Korean company building monopile manufacturing facility at Teesside - 750+ jobs.", source: "SeAH Wind" },
+            { lat: 51.5074, lng: -0.1278, category: "local-growth", title: "London Tech Cluster", text: "UK's largest technology cluster continues to grow around Old Street and Kings Cross.", source: "Tech Nation" },
+            { lat: 52.2053, lng: 0.1218, category: "local-growth", title: "Cambridge Life Sciences", text: "Cambridge biotech cluster - one of largest in Europe with major growth in genomics and AI.", source: "Cambridge Ahead" },
+            { lat: 51.7520, lng: -1.2577, category: "local-growth", title: "Oxford Science Arc", text: "Arc of innovation from Harwell to central Oxford with major life sciences investment.", source: "OxLEP" },
+            { lat: 53.4808, lng: -2.2426, category: "local-growth", title: "MediaCity Expansion", text: "MediaCity UK at Salford Quays continues expansion with new tech and creative businesses.", source: "MediaCity" },
+            { lat: 51.4545, lng: -2.5879, category: "local-growth", title: "Bristol Temple Quarter", text: "Major regeneration around Temple Meads station including new university campus.", source: "Bristol City Council" },
+            { lat: 52.4862, lng: -1.8904, category: "local-growth", title: "UK Battery Industrialisation Centre", text: "National facility at Coventry supporting battery manufacturing scale-up.", source: "UKBIC" },
+            { lat: 55.0000, lng: -1.6000, category: "local-growth", title: "Blyth Energy Hub", text: "Major cluster for offshore renewable energy including ORE Catapult facilities.", source: "ORE Catapult" },
+            { lat: 53.9500, lng: -1.0800, category: "local-growth", title: "York Biotech Campus", text: "Growing biotechnology campus around University of York.", source: "UoY" },
+            { lat: 50.3755, lng: -4.1427, category: "local-growth", title: "Plymouth Marine Innovation", text: "National Marine Park and marine innovation hub development.", source: "PCC" },
+            { lat: 51.5000, lng: 0.1000, category: "local-growth", title: "Royal Docks Enterprise Zone", text: "Major regeneration with focus on food innovation and data centres.", source: "GLA" },
+            { lat: 53.2300, lng: -2.2500, category: "local-growth", title: "Alderley Park Growth", text: "Life sciences campus with over 200 companies and major pharma presence.", source: "Bruntwood SciTech" },
+            { lat: 52.9700, lng: -1.1700, category: "local-growth", title: "Nottingham Creative Quarter", text: "Creative industries hub in city centre with gaming and digital media focus.", source: "Creative Quarter Company" },
+            { lat: 50.8200, lng: -0.1400, category: "local-growth", title: "Brighton Digital Hub", text: "One of UK's fastest growing digital clusters outside London.", source: "Wired Sussex" },
+            { lat: 54.9700, lng: -1.6100, category: "local-growth", title: "Newcastle Helix", text: "24-acre urban development for science and technology in Newcastle city centre.", source: "Newcastle City Council" },
+            { lat: 53.4000, lng: -1.4700, category: "local-growth", title: "AMID (Advanced Manufacturing Innovation District)", text: "Sheffield cluster linking university research with manufacturing industry.", source: "AMID" },
+            { lat: 56.4620, lng: -2.9700, category: "local-growth", title: "Dundee Waterfront", text: "Major regeneration including V&A Dundee driving cultural and economic growth.", source: "Dundee City Council" },
+            { lat: 51.4500, lng: -2.6000, category: "local-growth", title: "Bristol & Bath Creative Cluster", text: "One of UK's leading creative clusters including Aardman, Massive Attack.", source: "Bristol Creative Industries" },
+
+            // CONSTRUCTION INTELLIGENCE
+            { lat: 51.5045, lng: -0.0865, category: "construction", title: "The Shard Quarter Expansion", text: "Ongoing development around London Bridge including new office and residential towers.", source: "Various" },
+            { lat: 51.5033, lng: -0.1195, category: "construction", title: "South Bank Regeneration", text: "Continued investment around South Bank cultural quarter.", source: "Lambeth Council" },
+            { lat: 53.4835, lng: -2.2420, category: "construction", title: "Manchester St Johns Development", text: "Major mixed-use scheme near Manchester Arena.", source: "Allied London" },
+            { lat: 52.4800, lng: -1.8900, category: "construction", title: "Birmingham Paradise Development", text: "Major city centre office and public realm scheme nearing completion.", source: "MEPC/Argent" },
+            { lat: 53.4808, lng: -2.2426, category: "construction", title: "Manchester Co-op Live Arena", text: "UK's largest indoor arena now operational (23,500 capacity).", source: "Oak View Group" },
+            { lat: 51.5500, lng: -0.1600, category: "construction", title: "HS2 Euston Rebuild", text: "Euston station redevelopment alongside HS2 terminus construction.", source: "HS2 Ltd" },
+            { lat: 53.4084, lng: -2.9916, category: "construction", title: "Liverpool Waters", text: "150-acre, 30-year regeneration of Liverpool's northern docks.", source: "Peel Waters" },
+            { lat: 51.5074, lng: 0.0400, category: "construction", title: "Royal Albert Dock Regeneration", text: "ABP investment in major Chinese business park.", source: "ABP" },
+            { lat: 54.9720, lng: -1.6100, category: "construction", title: "Newcastle East Pilgrim Street", text: "Major office-led regeneration of Newcastle city centre.", source: "Pilgrim Street LLP" },
+            { lat: 53.7997, lng: -1.5400, category: "construction", title: "Leeds South Bank", text: "Major regeneration south of River Aire including new homes and HS2 station site.", source: "Leeds City Council" },
+            { lat: 52.4862, lng: -1.8904, category: "construction", title: "Birmingham Smithfield", text: "Redevelopment of former wholesale markets site in city centre.", source: "BCC/Lendlease" },
+            { lat: 51.5100, lng: -0.1200, category: "construction", title: "Strand Aldwych Transformation", text: "Major public realm improvements completed creating new pedestrian space.", source: "Westminster Council" },
+            { lat: 53.3811, lng: -1.4600, category: "construction", title: "Sheffield Heart of the City II", text: "City centre regeneration including new retail and office space.", source: "Sheffield City Council" },
+            { lat: 51.4500, lng: -2.6200, category: "construction", title: "Bristol Arena Development", text: "New arena and conference facility at Temple Island.", source: "Bristol City Council" },
+            { lat: 50.9097, lng: -1.4044, category: "construction", title: "Southampton Watermark WestQuay", text: "Mixed-use leisure development completion.", source: "Hammerson" },
+            { lat: 54.5704, lng: -1.2350, category: "construction", title: "Middlesbrough Town Centre", text: "Town centre regeneration including new entertainment venues.", source: "Middlesbrough Council" },
+            { lat: 55.9533, lng: -3.1883, category: "construction", title: "Edinburgh St James Quarter", text: "Major city centre retail and leisure scheme completed.", source: "Nuveen Real Estate" },
+            { lat: 53.4084, lng: -2.9916, category: "construction", title: "Everton Stadium Bramley-Moore Dock", text: "New 52,888 capacity stadium under construction on Liverpool waterfront.", source: "Everton FC" },
+            { lat: 51.5540, lng: 0.0240, category: "construction", title: "Olympic Park Queen Elizabeth", text: "Continued development of residential and cultural facilities at former Olympic site.", source: "LLDC" },
+            { lat: 53.4720, lng: -2.2470, category: "construction", title: "Manchester Mayfield", text: "18-acre mixed-use development including new park in city centre.", source: "U+I/LCR/Manchester City Council" },
+
+            // ADDITIONAL DEVOLUTION & GOVERNANCE
+            { lat: 51.5074, lng: -0.1278, category: "devolution", title: "English Devolution Bill", text: "Government's framework for expanding devolution across England, enabling more areas to access powers.", source: "MHCLG" },
+            { lat: 55.8642, lng: -4.2518, category: "devolution", title: "Glasgow City Region Deal", text: "City region deal delivering infrastructure and innovation investments across Glasgow region.", source: "Glasgow City Region" },
+            { lat: 51.4816, lng: -3.1791, category: "devolution", title: "Cardiff Capital Region", text: "Cardiff Capital Region City Deal driving economic growth across South East Wales.", source: "CCR" },
+            { lat: 53.0046, lng: -2.1798, category: "devolution", title: "Stoke-on-Trent Deal", text: "Discussions for Level 2 devolution deal covering Staffordshire and Stoke-on-Trent.", source: "DLUHC" },
+
+            // ENERGY & NET ZERO PROJECTS
+            { lat: 51.9200, lng: 1.4500, category: "construction", title: "Sizewell C Nuclear", text: "New nuclear power station approved - will provide 3.2GW of low-carbon electricity.", source: "EDF" },
+            { lat: 51.2200, lng: 0.6300, category: "construction", title: "Lower Thames Crossing", text: "UK's largest road infrastructure project - 14.3 mile tunnel under Thames.", source: "National Highways" },
+            { lat: 54.9100, lng: -1.3800, category: "local-growth", title: "North East Hydrogen Hub", text: "Major green hydrogen production facility planned for Teesside region.", source: "Various" },
+            { lat: 53.4000, lng: 0.2000, category: "construction", title: "Hornsea Wind Farm", text: "World's largest offshore wind farm cluster - Hornsea 3 under construction.", source: "Orsted" },
+            { lat: 55.1260, lng: -1.5080, category: "local-growth", title: "Blyth Offshore Wind Hub", text: "Major hub for offshore wind operations and maintenance.", source: "Port of Blyth" },
+            { lat: 52.9400, lng: 1.1300, category: "construction", title: "Norwich Western Link", text: "New 3.9 mile road connecting A1270 to A47 under construction.", source: "Norfolk County Council" },
+            { lat: 57.4800, lng: -4.2200, category: "local-growth", title: "Nigg Energy Park", text: "Major fabrication and construction facility for renewable energy.", source: "Global Energy Group" },
+
+            // SCIENCE & RESEARCH
+            { lat: 51.5700, lng: -1.3100, category: "local-growth", title: "Harwell Science Campus", text: "UK's largest science campus with 6,000+ people across 200+ organisations.", source: "UKRI" },
+            { lat: 53.2300, lng: -2.2800, category: "local-growth", title: "Jodrell Bank Discovery Centre", text: "World heritage site and home to major radio astronomy research.", source: "UoM" },
+            { lat: 51.0543, lng: -1.4400, category: "local-growth", title: "Porton Science Campus", text: "Major life sciences and bioscience research cluster.", source: "Porton Science" },
+            { lat: 52.2053, lng: 0.1218, category: "local-growth", title: "Cambridge Biomedical Campus", text: "Europe's largest medical research campus with major hospital and research investment.", source: "CBC" },
+            { lat: 50.7368, lng: -3.5339, category: "local-growth", title: "Exeter Science Park", text: "Growing science park linked to University of Exeter.", source: "Exeter Science Park" },
+            { lat: 53.8700, lng: -1.6600, category: "local-growth", title: "Bradford Institute of Technology", text: "New Institute of Technology for advanced manufacturing and engineering.", source: "IoT" },
+            { lat: 55.9221, lng: -3.1747, category: "local-growth", title: "Edinburgh BioQuarter", text: "Major life sciences cluster with research hospital and business space.", source: "Scottish Enterprise" }
+        ];
         
         // Custom catapult icon
         const catapultIcon = L.divIcon({
@@ -705,7 +885,80 @@
                 <p><strong>Type:</strong> ${centre.type}</p>
             `);
         });
-        
+
+        // Custom freeport icon
+        const freeportIcon = L.divIcon({
+            className: 'freeport-marker',
+            html: '<div style="background: #00CED1; border: 2px solid #008B8B; border-radius: 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px;">🚢</div>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        // Add freeport markers
+        freeports.forEach(freeport => {
+            const marker = L.marker([freeport.lat, freeport.lng], {
+                icon: freeportIcon
+            }).addTo(freeportsLayer);
+
+            marker.bindPopup(`
+                <div class="popup-title">🚢 ${freeport.name}</div>
+                <p><strong>Location:</strong> ${freeport.location}</p>
+                <p><strong>Status:</strong> <span style="color: ${freeport.status === 'Operational' ? 'green' : 'orange'};">${freeport.status}</span></p>
+                <p><strong>Tax Sites:</strong> ${freeport.taxSites} | <strong>Customs Sites:</strong> ${freeport.customsSites}</p>
+                <p><strong>Focus:</strong> ${freeport.focus}</p>
+            `);
+        });
+
+        // Custom investment zone icon
+        const investmentZoneIcon = L.divIcon({
+            className: 'investment-zone-marker',
+            html: '<div style="background: #FFD700; border: 2px solid #DAA520; border-radius: 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px;">💰</div>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        // Add investment zone markers
+        investmentZones.forEach(zone => {
+            const marker = L.marker([zone.lat, zone.lng], {
+                icon: investmentZoneIcon
+            }).addTo(investmentZonesLayer);
+
+            marker.bindPopup(`
+                <div class="popup-title">💰 ${zone.name}</div>
+                <p><strong>Region:</strong> ${zone.region}</p>
+                <p><strong>Focus:</strong> ${zone.focus}</p>
+                <p><strong>Funding:</strong> £${zone.funding}</p>
+            `);
+        });
+
+        // Category colors for intelligence
+        const categoryColors = {
+            'devolution': '#ff6b6b',
+            'local-growth': '#4ecdc4',
+            'transport': '#45b7d1',
+            'construction': '#96c93d'
+        };
+
+        // Add pre-loaded intelligence markers
+        preloadedIntelligence.forEach(intel => {
+            const marker = L.circleMarker([intel.lat, intel.lng], {
+                radius: 8,
+                fillColor: categoryColors[intel.category],
+                color: '#9932CC',
+                weight: 3,
+                fillOpacity: 0.8
+            }).addTo(preloadedIntelLayer);
+
+            const categoryLabel = intel.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+            marker.bindPopup(`
+                <div class="popup-title">📡 ${intel.title}</div>
+                <span class="popup-category ${intel.category}">${categoryLabel}</span>
+                <div class="intel-item">${intel.text}</div>
+                <p style="font-size: 10px; color: #666;">Source: ${intel.source}</p>
+            `);
+        });
+
         // Load intelligence from localStorage
         function loadIntelligence() {
             intelligenceLayer.clearLayers();
@@ -762,6 +1015,30 @@
                 map.addLayer(intelligenceLayer);
             } else {
                 map.removeLayer(intelligenceLayer);
+            }
+        });
+
+        document.getElementById('toggleFreeports').addEventListener('change', function() {
+            if (this.checked) {
+                map.addLayer(freeportsLayer);
+            } else {
+                map.removeLayer(freeportsLayer);
+            }
+        });
+
+        document.getElementById('toggleInvestmentZones').addEventListener('change', function() {
+            if (this.checked) {
+                map.addLayer(investmentZonesLayer);
+            } else {
+                map.removeLayer(investmentZonesLayer);
+            }
+        });
+
+        document.getElementById('togglePreloadedIntel').addEventListener('change', function() {
+            if (this.checked) {
+                map.addLayer(preloadedIntelLayer);
+            } else {
+                map.removeLayer(preloadedIntelLayer);
             }
         });
         
