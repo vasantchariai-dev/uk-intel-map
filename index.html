@@ -101,7 +101,7 @@
         
         .map-container {
             flex: 1;
-            min-width: 500px;
+            min-width: 0;
             height: 600px;
             border: 5px ridge #808080;
         }
@@ -356,10 +356,59 @@
             }
             .sidebar {
                 width: auto;
+                order: 2;
             }
             .map-container {
-                min-width: auto;
-                height: 400px;
+                min-width: 100%;
+                width: 100%;
+                height: 50vh;
+                min-height: 300px;
+                order: 1;
+            }
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 1.2em;
+            }
+            .header p {
+                font-size: 12px;
+            }
+            .marquee {
+                font-size: 14px;
+            }
+            .map-container {
+                height: 60vh;
+                min-height: 250px;
+                border-width: 3px;
+            }
+            .sidebar {
+                padding: 8px;
+            }
+            .sidebar h2 {
+                font-size: 12px;
+            }
+            .layer-toggle {
+                padding: 8px;
+            }
+            .layer-toggle label {
+                font-size: 14px;
+            }
+            .legend-item {
+                font-size: 11px;
+            }
+            .form-section {
+                padding: 8px;
+            }
+            .btn-90s {
+                padding: 10px;
+                font-size: 14px;
             }
         }
     </style>
